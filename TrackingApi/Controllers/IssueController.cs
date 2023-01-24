@@ -13,7 +13,7 @@ namespace TrackingApi.Controllers
         private readonly IssueDbContext _context;
         public IssueController(IssueDbContext context) => _context = context;
 
-        [HttpGet]
+        [HttpGet("All")]
         public async Task<IEnumerable<Issue>> Get()
         {
             return await _context.Issues.ToListAsync();
@@ -28,7 +28,7 @@ namespace TrackingApi.Controllers
             return issue == null?NotFound() : Ok(issue);
         }
 
-        [HttpPost]
+        [HttpPost("Create")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         public async Task<IActionResult> Create(Issue issue)
         {
@@ -38,7 +38,7 @@ namespace TrackingApi.Controllers
             return CreatedAtAction(nameof(GetByID), new {id = issue.Id},issue);
         }
 
-        [HttpPut]
+        [HttpPut("Update/{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Update(int id, Issue issue)
@@ -52,7 +52,7 @@ namespace TrackingApi.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("Delete/{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
 
