@@ -57,6 +57,9 @@ if (response.IsSuccessStatusCode)
                 keepRunning = false;
                 break;
 
+            default:
+                Console.WriteLine("!!! Wrong choice try again !!!");
+                break;
 
         }
         async Task IssueList()
@@ -206,4 +209,4 @@ else
     Console.WriteLine(response.StatusCode.ToString());
 }
 
-Console.ReadLine();
+Console.ReadKey();
