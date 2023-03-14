@@ -19,7 +19,7 @@ namespace TrackingApi.Controllers
             return await _context.Issues.ToListAsync();
         }
 
-        [HttpGet("id")]
+        [HttpGet("{id}")]
         [ProducesResponseType(typeof(Issue), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetByID(int id)
