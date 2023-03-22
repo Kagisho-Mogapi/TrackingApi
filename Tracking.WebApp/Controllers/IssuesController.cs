@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using Tracking.WebApp.Data;
 using Tracking.WebApp.Models;
 
@@ -20,12 +22,12 @@ namespace Tracking.WebApp.Controllers
         public IssuesController(TrackingWebAppContext context)
         {
             _context = context;
+            client.BaseAddress = new Uri("https://localhost:7071");
         }
 
         // GET: Issues
         public async Task<IActionResult> Index()
         {
-            client.BaseAddress = new Uri("https://localhost:7071");
 
             HttpResponseMessage response = await client.GetAsync("api/issue/All");
             response.EnsureSuccessStatusCode();
@@ -41,7 +43,6 @@ namespace Tracking.WebApp.Controllers
             {
                 return NotFound();
             }
-            client.BaseAddress = new Uri("https://localhost:7071");
 
             HttpResponseMessage response = await client.GetAsync($"api/issue/{id}");
             response.EnsureSuccessStatusCode();
@@ -72,8 +73,14 @@ namespace Tracking.WebApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(issue);
-                await _context.SaveChangesAsync();
+                var stringPayload = JsonConvert.SerializeObject(issue);
+                var httpContent = new StringContent(stringPayload, Encoding.UTF8, "application/json");
+
+                HttpResponseMessage response = await client.PostAsync("api/issue/Create", httpContent);
+                response.EnsureSuccessStatusCode();
+
+                //_context.Add(issue);
+                //await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             return View(issue);
@@ -137,9 +144,11 @@ namespace Tracking.WebApp.Controllers
             {
                 return NotFound();
             }
-
-            var issue = await _context.Issue
-                .FirstOrDefaultAsync(m => m.Id == id);
+            HttpResponseMessage response = await client.GetAsync($"api/issue/{id}");
+            response.EnsureSuccessStatusCode();
+            var issue = await response.Content.ReadFromJsonAsync<Issue>();
+            /*var issue = await _context.Issue
+                .FirstOrDefaultAsync(m => m.Id == id);*/
             if (issue == null)
             {
                 return NotFound();
@@ -157,13 +166,17 @@ namespace Tracking.WebApp.Controllers
             {
                 return Problem("Entity set 'TrackingWebAppContext.Issue'  is null.");
             }
-            var issue = await _context.Issue.FindAsync(id);
+
+            HttpResponseMessage response = await client.DeleteAsync($"api/issue/Delete/{id}");
+            response.EnsureSuccessStatusCode();
+
+            /*var issue = await _context.Issue.FindAsync(id);
             if (issue != null)
             {
                 _context.Issue.Remove(issue);
             }
             
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();*/
             return RedirectToAction(nameof(Index));
         }
 

@@ -98,7 +98,7 @@ if (response.IsSuccessStatusCode)
                 "\nCreated: " + issue1.Created);
         }
 
-        async Task  CreateIssue()
+        async Task CreateIssue()
         {
             Console.WriteLine("-----------Creating Issue------------");
             int input = 0;
